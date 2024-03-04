@@ -2,11 +2,20 @@ import 'package:flutter/material.dart';
 import '../components/components.dart';
 import '../models/models.dart';
 import '../api/mock_fooderlich_service.dart';
+import 'dart:developer';
 
-class ExploreScreen extends StatelessWidget {
-  // 1
-  final mockService = MockFooderlichService();
+class ExploreScreen extends StatefulWidget {
   ExploreScreen({super.key});
+
+  @override
+  State<ExploreScreen> createState() => _ExploreScreenState();
+}
+
+class _ExploreScreenState extends State<ExploreScreen> {
+  // 1
+  late ScrollController _controller;
+  final mockService = MockFooderlichService();
+
   @override
   Widget build(BuildContext context) {
     // 1
@@ -20,6 +29,7 @@ class ExploreScreen extends StatelessWidget {
           // 5
           return ListView(
             // 6
+            controller: _controller,
             scrollDirection: Axis.vertical,
             children: [
               // 7
@@ -39,5 +49,33 @@ class ExploreScreen extends StatelessWidget {
         }
       },
     );
+  }
+
+  void _scrollListener() {
+    // 1
+    if (_controller.offset >= _controller.position.maxScrollExtent &&
+        !_controller.position.outOfRange) {
+      log('i am at the bottom!');
+    }
+    // 2
+    if (_controller.offset <= _controller.position.minScrollExtent &&
+        !_controller.position.outOfRange) {
+      log('i am at the top!');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // 1
+    _controller = ScrollController();
+    // 2
+    _controller.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_scrollListener);
+    super.dispose();
   }
 }
